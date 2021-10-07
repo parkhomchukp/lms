@@ -7,8 +7,35 @@ from webargs import fields
 
 
 # Create your views here.
-def get_teachers(request):
+@use_args(
+    {
+        "id": fields.Int(
+            required=False
+        ),
+        "first_name": fields.Str(
+            required=False
+        ),
+        "last_name": fields.Str(
+            required=False
+        ),
+        "email": fields.Str(
+            required=False
+        ),
+        "birthdate": fields.Date(
+            required=False
+        ),
+        "department": fields.Str(
+            required=False
+        ),
+    },
+    location="query",
+)
+def get_teachers(request, params):
     teachers = Teacher.objects.all()
+
+    for param_name, param_value in params.items():
+        teachers = teachers.filter(**{param_name: param_value})
+
     result = format_records(teachers)
 
     return HttpResponse(result)
