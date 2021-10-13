@@ -10,6 +10,9 @@ class Group(models.Model):
     group_name = models.CharField(max_length=80, null=False)
     number_of_members = models.IntegerField(null=False)
 
+    def __str__(self):
+        return f'{self.id}, {self.group_name}, {self.number_of_members}'
+
     @classmethod
     def generate_groups(cls, count):
         faker = Faker()
