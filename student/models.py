@@ -5,7 +5,7 @@ from faker import Faker
 
 from django.db import models
 
-from .validators import no_elon_validator, domain_validator
+from .validators import no_elon_validator, domain_validator, age_validator
 
 
 # Create your models here.
@@ -32,7 +32,7 @@ class Student(models.Model):
             domain_validator
         ],
     )
-    birthdate = models.DateField(null=True, default=datetime.date.today)
+    birthdate = models.DateField(null=True, default=datetime.date.today, validators=[age_validator])
     phone_number = models.CharField(null=True, max_length=14, unique=True, validators=[RegexValidator('\d{10,14}')])
 
     def __str__(self):
