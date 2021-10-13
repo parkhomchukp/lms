@@ -5,7 +5,7 @@ from faker import Faker
 
 from django.db import models
 
-from .validators import no_elon_validator
+from .validators import no_elon_validator, domain_validator
 
 
 # Create your models here.
@@ -24,7 +24,14 @@ class Student(models.Model):
             MinLengthValidator(2),
         ],
     )
-    email = models.EmailField(max_length=120, null=True, validators=[no_elon_validator])
+    email = models.EmailField(
+        max_length=120,
+        null=True,
+        validators=[
+            no_elon_validator,
+            domain_validator
+        ],
+    )
     birthdate = models.DateField(null=True, default=datetime.date.today)
     phone_number = models.CharField(null=True, max_length=14, unique=True, validators=[RegexValidator('\d{10,14}')])
 
