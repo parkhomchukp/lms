@@ -7,7 +7,7 @@ from student.models import Student
 class StudentCreateForm(ModelForm):
     class Meta:
         model = Student
-        fields = ['first_name', 'last_name', 'email', 'phone_number']
+        fields = ['first_name', 'last_name', 'email', 'phone_number', 'birthdate']
 
         widgets = {'phone_number': TextInput(attrs={'pattern': '\d{10,14}'})}
 

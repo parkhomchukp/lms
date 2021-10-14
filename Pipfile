@@ -9,6 +9,7 @@ faker = "*"
 ipython = "*"
 django-extensions = "*"
 webargs = "*"
+django-debug-toolbar = "*"
 
 [dev-packages]
 

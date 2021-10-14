@@ -11,10 +11,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='student',
-            name='birthday',
-        ),
         migrations.AddField(
             model_name='student',
             name='birthdate',

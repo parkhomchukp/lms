@@ -2,6 +2,7 @@ import datetime
 import random
 
 from django.db import models
+from django.utils.timezone import now
 from faker import Faker
 
 
@@ -11,7 +12,7 @@ class Teacher(models.Model):
     last_name = models.CharField(max_length=80, null=False)
     department = models.CharField(max_length=80, null=False)
     email = models.EmailField(max_length=120, null=True)
-    birthdate = models.DateField(null=True, default=datetime.datetime)
+    birthdate = models.DateField(null=True, default=now())
 
     def __str__(self):
         return f'{self.full_name()}, {self.age()} ({self.id})'
