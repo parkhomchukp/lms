@@ -31,6 +31,7 @@ class Student(models.Model):
             no_elon_validator,
             domain_validator
         ],
+        unique=True
     )
     birthdate = models.DateField(null=True, default=datetime.date.today, validators=[age_validator])
     phone_number = models.CharField(null=True, max_length=14, unique=True, validators=[RegexValidator('\d{10,14}')])
