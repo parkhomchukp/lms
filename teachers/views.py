@@ -13,24 +13,12 @@ from webargs import fields
 # Create your views here.
 @use_args(
     {
-        "id": fields.Int(
-            required=False
-        ),
-        "first_name": fields.Str(
-            required=False
-        ),
-        "last_name": fields.Str(
-            required=False
-        ),
-        "email": fields.Str(
-            required=False
-        ),
-        "birthdate": fields.Date(
-            required=False
-        ),
-        "department": fields.Str(
-            required=False
-        ),
+        "id": fields.Int(required=False),
+        "first_name": fields.Str(required=False),
+        "last_name": fields.Str(required=False),
+        "email": fields.Str(required=False),
+        "birthdate": fields.Date(required=False),
+        "department": fields.Str(required=False),
     },
     location="query",
 )

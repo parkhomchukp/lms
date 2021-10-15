@@ -27,14 +27,15 @@ class Student(models.Model):
     email = models.EmailField(
         max_length=120,
         null=True,
-        validators=[
-            no_elon_validator,
-            domain_validator
-        ],
-        unique=True
+        validators=[no_elon_validator, domain_validator],
+        unique=True,
     )
-    birthdate = models.DateField(null=True, default=datetime.date.today, validators=[age_validator])
-    phone_number = models.CharField(null=True, max_length=14, unique=True, validators=[RegexValidator('\d{10,14}')])
+    birthdate = models.DateField(
+        null=True, default=datetime.date.today, validators=[age_validator]
+    )
+    phone_number = models.CharField(
+        null=True, max_length=14, unique=True, validators=[RegexValidator("\d{10,14}")]
+    )
     enroll_date = models.DateField(
         null=False,
         default=datetime.date.today(),

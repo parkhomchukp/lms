@@ -8,20 +8,12 @@ from webargs import fields
 
 from .forms import GroupCreateForm
 from .models import Group
-
-
-# Create your views here.
 from .utils import format_records
 
+# Create your views here.
 
-@use_args(
-    {
-        'group_name': fields.Str(
-            required=False
-        )
-    },
-    location='query'
-)
+
+@use_args({"group_name": fields.Str(required=False)}, location="query")
 def get_groups(request, group_name):
     groups = Group.objects.all()
 

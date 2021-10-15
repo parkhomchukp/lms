@@ -17,14 +17,7 @@ def hello(request):
 
 
 @use_args(
-    {
-        "first_name": fields.Str(
-            required=False
-        ),
-        "text": fields.Str(
-            required=False
-        )
-    },
+    {"first_name": fields.Str(required=False), "text": fields.Str(required=False)},
     location="query",
 )
 def get_students(request, params):
@@ -46,9 +39,9 @@ def get_students(request, params):
         if param_value:
             if param_name == 'text':
                 students = students.filter(
-                    Q(first_name__contains=param_value) |
-                    Q(last_name__contains=param_value) |
-                    Q(email__contains=param_value)
+                    Q(first_name__contains=param_value)
+                    | Q(last_name__contains=param_value)
+                    | Q(email__contains=param_value)
                 )
             else:
                 students = students.filter(**{param_name: param_value})
