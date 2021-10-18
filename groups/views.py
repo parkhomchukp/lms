@@ -1,6 +1,5 @@
-from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
@@ -9,20 +8,12 @@ from webargs import fields
 
 from .forms import GroupCreateForm
 from .models import Group
-
-
-# Create your views here.
 from .utils import format_records
 
+# Create your views here.
 
-@use_args(
-    {
-        'group_name': fields.Str(
-            required=False
-        )
-    },
-    location='query'
-)
+
+@use_args({"group_name": fields.Str(required=False)}, location="query")
 def get_groups(request, group_name):
     groups = Group.objects.all()
 
@@ -50,5 +41,28 @@ def create_group(request):
               <input type="submit" value="Create">
             </form>
             """
+
+    return HttpResponse(form_html)
+
+
+@csrf_exempt
+def update_group(request, pk):
+    group = get_object_or_404(Group, id=pk)
+    form = None
+
+    if request.method == 'POST':
+        form = GroupCreateForm(request.POST, instance=group)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('groups:list'))
+    elif request.method == 'GET':
+        form = GroupCreateForm(instance=group)
+
+    form_html = f"""
+        <form method="POST">
+          {form.as_p()}
+          <input type="submit" value="Save">
+        </form>
+        """
 
     return HttpResponse(form_html)
