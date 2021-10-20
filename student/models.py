@@ -1,15 +1,20 @@
 import datetime
+import uuid
 
 from django.core.validators import MinLengthValidator, RegexValidator
 from faker import Faker
 
 from django.db import models
+from phonenumber_field.modelfields import PhoneNumberField
 
 from .validators import no_elon_validator, domain_validator, age_validator
 
 
 # Create your models here.
-class Student(models.Model):
+class Person(models.Model):
+    class Meta:
+        abstract = True
+
     first_name = models.CharField(
         max_length=60,
         null=False,
@@ -30,11 +35,16 @@ class Student(models.Model):
         validators=[no_elon_validator, domain_validator],
         unique=True,
     )
+    # phone_number = models.CharField(
+    #     null=True, max_length=14, unique=True, validators=[RegexValidator("\d{10,14}")]
+    # )
+    phone_number = PhoneNumberField(unique=True, null=True)
+
+
+class Student(Person):
+    course = models.ForeignKey("student.Course", null=True, on_delete=models.SET_NULL)
     birthdate = models.DateField(
         null=True, default=datetime.date.today, validators=[age_validator]
-    )
-    phone_number = models.CharField(
-        null=True, max_length=14, unique=True, validators=[RegexValidator("\d{10,14}")]
     )
     enroll_date = models.DateField(
         null=False,
@@ -65,3 +75,24 @@ class Student(models.Model):
                 birthdate=faker.date_time_between(start_date="-30y", end_date="-18y"),
             )
             st.save()
+
+
+class Course(models.Model):
+    id = models.UUIDField(
+        primary_key=True, unique=True, default=uuid.uuid4, editable=False
+    )
+    name = models.CharField(null=False, max_length=100)
+    start_date = models.DateField(null=True, default=datetime.datetime.today)
+    count_of_students = models.IntegerField(
+        null=True,
+    )
+
+    def __str__(self):
+        return f"{self.name}"
+
+
+class Teacher(Person):
+    course = models.ManyToManyField(to="student.Course")
+
+    def __str__(self):
+        return f"{self.email} ({self.id})"

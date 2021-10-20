@@ -3,7 +3,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 
-from student.forms import StudentCreateForm
+from student.forms import StudentCreateForm, TeacherBaseForm
 from student.models import Student
 from student.utils import format_records
 from webargs.djangoparser import use_args
@@ -12,8 +12,14 @@ from django.urls import reverse
 
 
 # Create your views here.
+
+
 def hello(request):
     return HttpResponse('SUCCESS')
+
+
+def index(request):
+    return render(request=request, template_name="index.html")
 
 
 @use_args(
@@ -21,18 +27,6 @@ def hello(request):
     location="query",
 )
 def get_students(request, params):
-    form = """
-        <form >
-          <label>First name:</label><br>
-          <input type="text" name="first_name"><br>
-
-          <label>Text:</label><br>
-          <input type="text" name="text" placeholder="Enter text to search"><br><br>
-
-          <input type="submit" value="Search">
-        </form>
-        """
-
     students = Student.objects.all().order_by('-id')
 
     for param_name, param_value in params.items():
@@ -46,11 +40,11 @@ def get_students(request, params):
             else:
                 students = students.filter(**{param_name: param_value})
 
-    result = format_records(students)
-
-    response = form + result
-
-    return HttpResponse(response)
+    return render(
+        request=request,
+        template_name="students_table.html",
+        context={"students": students},
+    )
 
 
 @csrf_exempt
@@ -65,14 +59,11 @@ def create_student(request):
     elif request.method == 'GET':
         form = StudentCreateForm()
 
-    form_html = f"""
-        <form method="POST">
-          {form.as_p()}
-          <input type="submit" value="Create">
-        </form>
-        """
-
-    return HttpResponse(form_html)
+    return render(
+        request=request,
+        template_name="students_create.html",
+        context={"form": form},
+    )
 
 
 @csrf_exempt
@@ -96,3 +87,28 @@ def update_student(request, pk):
     """
 
     return HttpResponse(form_html)
+
+
+def delete_student(request, pk):
+    student = get_object_or_404(Student, id=pk)
+    student.delete()
+
+    return HttpResponseRedirect(reverse("students:list"))
+
+
+@csrf_exempt
+def create_teacher(request):
+    if request.method == "POST":
+        form = TeacherBaseForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse("students:list"))
+
+    elif request.method == "GET":
+        form = TeacherBaseForm()
+
+    return render(
+        request=request,
+        template_name="teacher_create.html",
+        context={"form": form},
+    )

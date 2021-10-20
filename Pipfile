@@ -10,6 +10,9 @@ ipython = "*"
 django-extensions = "*"
 webargs = "*"
 django-debug-toolbar = "*"
+django-crispy-forms = "*"
+django-phonenumber-field = "*"
+phonenumbers = "*"
 
 [dev-packages]
 

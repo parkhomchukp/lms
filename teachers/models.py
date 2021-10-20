@@ -11,7 +11,7 @@ class Teacher(models.Model):
     last_name = models.CharField(max_length=80, null=False)
     department = models.CharField(max_length=80, null=False)
     email = models.EmailField(max_length=120, null=True)
-    birthdate = models.DateField(null=True, default=datetime.today())
+    birthdate = models.DateField(null=True, default=datetime.today)
 
     def __str__(self):
         return f'{self.full_name()}, {self.age()} ({self.id})'

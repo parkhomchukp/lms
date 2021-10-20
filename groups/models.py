@@ -6,7 +6,7 @@ from datetime import datetime
 
 # Create your models here.
 class Group(models.Model):
-    start_date = models.DateField(null=True, default=datetime.today())
+    start_date = models.DateField(null=True, default=datetime.today)
     group_name = models.CharField(max_length=80, null=False)
     number_of_members = models.IntegerField(null=False)
 
