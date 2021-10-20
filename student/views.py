@@ -80,7 +80,7 @@ def update_student(request, pk):
         form = StudentCreateForm(instance=student)
 
     return render(
-        request=request, template_name="students_create.html", context={"form": form}
+        request=request, template_name="students_update.html", context={"form": form}
     )
 
 
