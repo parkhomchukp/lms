@@ -28,6 +28,9 @@
         <td>
             <a type="button" class="btn btn-danger" href="{% url "students:delete" pk=student.id %}">Delete</a>
         </td>
+        <td>
+            <a type="button" class="btn btn-success" href="{% url "students:update" pk=student.id %}">Update</a>
+        </td>
     </tr>
     {% endfor %}
     </tbody>
