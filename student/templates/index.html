@@ -52,8 +52,8 @@
                     <a class="nav-link" href="{% url "students:create-teacher" %}">Create teacher</a>
                 </li>
             </ul>
-            <form class="d-flex">
-                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <form class="d-flex" action="{% url 'search:index' %}" method="GET">
+                <input id="search" name="q" class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
                 <button class="btn btn-outline-success" type="submit">Search</button>
             </form>
         </div>
