@@ -1,7 +1,7 @@
 {% extends "index.html" %}
 
 {% block content %}
-
+{% if students %}
 <table class="table">
     <thead>
     <tr>
@@ -35,5 +35,8 @@
     {% endfor %}
     </tbody>
 </table>
+{% else %}
+<p class="lead">Nothing is found. Try to change you request</p>
+{% endif %}
 
 {% endblock %}

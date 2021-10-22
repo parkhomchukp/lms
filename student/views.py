@@ -79,14 +79,9 @@ def update_student(request, pk):
     elif request.method == 'GET':
         form = StudentCreateForm(instance=student)
 
-    form_html = f"""
-    <form method="POST">
-      {form.as_p()}
-      <input type="submit" value="Save">
-    </form>
-    """
-
-    return HttpResponse(form_html)
+    return render(
+        request=request, template_name="students_update.html", context={"form": form}
+    )
 
 
 def delete_student(request, pk):
@@ -112,3 +107,8 @@ def create_teacher(request):
         template_name="teacher_create.html",
         context={"form": form},
     )
+
+
+def error_404(request, exception):
+    data = {}
+    return render(request, "student/404.html", data)

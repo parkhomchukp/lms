@@ -33,3 +33,5 @@ urlpatterns = [
     path("delete/<int:pk>/", delete_student, name="delete"),
     path("create-teacher/", create_teacher, name="create-teacher"),
 ]
+
+handler404 = "student.views.error_404"
