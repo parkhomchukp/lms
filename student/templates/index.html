@@ -45,11 +45,19 @@
                     <a class="nav-link active" aria-current="page" href="{% url "students:list" %}">All students
                     table</a>
                 </li>
+                <li>
+                    <a class="nav-link active" aria-current="page" href="{% url "students:teachers-list" %}">All teachers
+                    table</a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url "students:create" %}">Create student</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url "students:create-teacher" %}">Create teacher</a>
+                </li>
+                <li>
+                {% block search %}
+                {% endblock %}
                 </li>
             </ul>
             <form class="d-flex" action="{% url 'search:index' %}" method="GET">

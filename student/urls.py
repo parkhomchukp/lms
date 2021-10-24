@@ -22,16 +22,34 @@ from student.views import (
     update_student,
     delete_student,
     create_teacher,
+    sort_students_by_course,
+    get_teachers,
+    delete_teacher,
+    update_teacher,
+    sort_teachers_by_course,
 )
 
 app_name = 'students'
 
 urlpatterns = [
     path("", get_students, name="list"),
+    path("teachers/", get_teachers, name="teachers-list"),
     path("new/", create_student, name="create"),
     path("edit/<int:pk>/", update_student, name="update"),
     path("delete/<int:pk>/", delete_student, name="delete"),
+    path("delete-teacher/<int:pk>/", delete_teacher, name="delete-teacher"),
     path("create-teacher/", create_teacher, name="create-teacher"),
+    path("edit-teacher/<int:pk>/", update_teacher, name="update-teacher"),
+    path(
+        "teachers-by-course/<str:course_name>",
+        sort_teachers_by_course,
+        name="teachers-by-course",
+    ),
+    path(
+        "students-by-course/<str:course_name>",
+        sort_students_by_course,
+        name="by-course",
+    ),
 ]
 
 handler404 = "student.views.error_404"
