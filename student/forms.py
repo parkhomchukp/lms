@@ -47,4 +47,7 @@ class TeacherBaseForm(PersonBaseForm):
         model = Teacher
         fields = ["first_name", "last_name", "email", "phone_number", "course"]
 
-        widgets = {"phone_number": TextInput(attrs={"pattern": "\d{10,14}"})}
+
+class TeacherUpdateForm(PersonBaseForm):
+    class Meta(TeacherBaseForm.Meta):
+        pass

@@ -3,8 +3,8 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 
-from student.forms import StudentCreateForm, TeacherBaseForm
-from student.models import Student
+from student.forms import StudentCreateForm, TeacherBaseForm, TeacherUpdateForm
+from student.models import Student, Course, Teacher
 from student.utils import format_records
 from webargs.djangoparser import use_args
 from webargs import fields
@@ -28,6 +28,7 @@ def index(request):
 )
 def get_students(request, params):
     students = Student.objects.all().order_by('-id')
+    courses = Course.objects.all()
 
     for param_name, param_value in params.items():
         if param_value:
@@ -43,7 +44,7 @@ def get_students(request, params):
     return render(
         request=request,
         template_name="students_table.html",
-        context={"students": students},
+        context={"students": students, "courses": courses},
     )
 
 
@@ -106,6 +107,61 @@ def create_teacher(request):
         request=request,
         template_name="teacher_create.html",
         context={"form": form},
+    )
+
+
+def sort_students_by_course(request, course_name):
+    students = Student.objects.all().filter(course__name__contains=course_name)
+    courses = Course.objects.all()
+    return render(
+        request=request,
+        template_name="students_table.html",
+        context={"students": students, "courses": courses},
+    )
+
+
+def get_teachers(request):
+    teachers = Teacher.objects.all().order_by("-id")
+    courses = Course.objects.all()
+    return render(
+        request=request,
+        template_name="teachers_table.html",
+        context={"teachers": teachers, "courses": courses},
+    )
+
+
+def delete_teacher(request, pk):
+    teacher = get_object_or_404(Teacher, id=pk)
+    teacher.delete()
+
+    return HttpResponseRedirect(reverse("students:teachers-list"))
+
+
+@csrf_exempt
+def update_teacher(request, pk):
+    teacher = get_object_or_404(Teacher, id=pk)
+
+    if request.method == "POST":
+        form = TeacherUpdateForm(request.POST, instance=teacher)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse("students:teachers-list"))
+
+    elif request.method == "GET":
+        form = TeacherUpdateForm(instance=teacher)
+
+    return render(
+        request=request, template_name="teachers_update.html", context={"form": form}
+    )
+
+
+def sort_teachers_by_course(request, course_name):
+    teachers = Teacher.objects.all().filter(course__name__contains=course_name)
+    courses = Course.objects.all()
+    return render(
+        request=request,
+        template_name="teachers_table.html",
+        context={"teachers": teachers, "courses": courses},
     )
 
 
