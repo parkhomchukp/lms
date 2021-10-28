@@ -7,7 +7,12 @@ from faker import Faker
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 
-from .validators import no_elon_validator, domain_validator, age_validator
+from .validators import (
+    no_elon_validator,
+    domain_validator,
+    age_validator,
+    validate_file_extension,
+)
 
 
 # Create your models here.
@@ -48,12 +53,20 @@ class Student(Person):
     )
     enroll_date = models.DateField(
         null=False,
-        default=datetime.date.today(),
+        default=datetime.date.today,
     )
     graduate_date = models.DateField(
         null=True,
-        default=datetime.date.today(),
+        default=datetime.date.today,
     )
+    photo = models.ImageField(
+        default="default.png",
+        blank=True,
+    )
+    cv = models.FileField(
+        default="default.txt", blank=True, validators=[validate_file_extension]
+    )
+    number_of_referals = models.IntegerField(default=0, null=True)
 
     def __str__(self):
         return f'{self.full_name()}, {self.age()}, {self.email} ({self.id})'
@@ -96,3 +109,17 @@ class Teacher(Person):
 
     def __str__(self):
         return f"{self.email} ({self.id})"
+
+
+class Invite:
+    id = models.UUIDField(
+        primary_key=True, unique=True, default=uuid.uuid4(), editable=False
+    )
+    student = models.ForeignKey("student.Student", null=True, on_delete=models.SET_NULL)
+    course = models.ForeignKey("student.Course", null=True, on_delete=models.SET_NULL)
+    recipient_first_name = models.CharField(
+        null=False, max_length=100, validators=[MinLengthValidator(2)]
+    )
+    recipient_last_name = models.CharField(
+        null=False, max_length=100, validators=[MinLengthValidator(2)]
+    )
