@@ -38,7 +38,10 @@ class Person(models.Model):
     # phone_number = models.CharField(
     #     null=True, max_length=14, unique=True, validators=[RegexValidator("\d{10,14}")]
     # )
-    phone_number = PhoneNumberField(unique=True, null=True)
+    phone_number = PhoneNumberField(
+        unique=True,
+        null=True,
+    )
 
 
 class Student(Person):

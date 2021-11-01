@@ -1,25 +1,22 @@
+from django.contrib.auth.views import LoginView
 from django.db.models import Q
+from django.forms.utils import ErrorList
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 
-from student.forms import StudentCreateForm, TeacherBaseForm, TeacherUpdateForm
+from student.forms import TeacherBaseForm, TeacherUpdateForm
 from student.models import Student, Course, Teacher
-from student.utils import format_records
 from webargs.djangoparser import use_args
 from webargs import fields
-from django.urls import reverse
-
-
+from django.urls import reverse, reverse_lazy
+from django.views.generic import TemplateView, CreateView, UpdateView
 # Create your views here.
 
 
-def hello(request):
-    return HttpResponse('SUCCESS')
-
-
-def index(request):
-    return render(request=request, template_name="index.html")
+class IndexView(TemplateView):
+    template_name = "index.html"
+    extra_context = {"site_name": "Pavlo"}
 
 
 @use_args(
@@ -48,41 +45,38 @@ def get_students(request, params):
     )
 
 
-@csrf_exempt
-def create_student(request):
+class CreateStudent(CreateView):
+    template_name = "students_create.html"
+    model = Student
+    fields = "__all__"
+    initial = {
+        "first_name": "default",
+        "last_name": "default",
+    }
+    success_url = reverse_lazy("students:list")
 
-    if request.method == 'POST':
-        form = StudentCreateForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse('students:list'))
-
-    elif request.method == 'GET':
-        form = StudentCreateForm()
-
-    return render(
-        request=request,
-        template_name="students_create.html",
-        context={"form": form},
-    )
+    def form_valid(self, form):
+        form.save(commit=False)
+        first_name = form.cleaned_data["first_name"]
+        last_name = form.cleaned_data["last_name"]
+        if first_name == last_name:
+            form._errors["first_name"] = ErrorList(["dsadas"])
+            form._errors["last_name"] = ErrorList(
+                [u"You already have an email with that name man."]
+            )
+            return super().form_invalid(form)
+        return super().form_valid(form)
 
 
-@csrf_exempt
-def update_student(request, pk):
-    student = get_object_or_404(Student, id=pk)
+class UpdateStudent(UpdateView):
+    model = Student
+    template_name = "students_update.html"
+    fields = "__all__"
+    success_url = reverse_lazy("students:list")
 
-    if request.method == 'POST':
-        form = StudentCreateForm(request.POST, instance=student)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse('students:list'))
 
-    elif request.method == 'GET':
-        form = StudentCreateForm(instance=student)
-
-    return render(
-        request=request, template_name="students_update.html", context={"form": form}
-    )
+class UserLogin(LoginView):
+    pass
 
 
 def delete_student(request, pk):
@@ -94,6 +88,7 @@ def delete_student(request, pk):
 
 @csrf_exempt
 def create_teacher(request):
+    form = None
     if request.method == "POST":
         form = TeacherBaseForm(request.POST)
         if form.is_valid():
@@ -139,6 +134,7 @@ def delete_teacher(request, pk):
 
 @csrf_exempt
 def update_teacher(request, pk):
+    form = None
     teacher = get_object_or_404(Teacher, id=pk)
 
     if request.method == "POST":
