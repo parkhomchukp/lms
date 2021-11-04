@@ -83,10 +83,3 @@ class Student(Person):
                 birthdate=faker.date_time_between(start_date="-30y", end_date="-18y"),
             )
             st.save()
-
-
-class Teacher(Person):
-    course = models.ManyToManyField(to="courses.Course")
-
-    def __str__(self):
-        return f"{self.email} ({self.id})"

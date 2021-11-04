@@ -25,29 +25,15 @@ from student.views import (
     GetStudents,
     GetStudentsByCourse,
     DeleteStudent,
-    CreateTeacher,
-    GetTeachers,
-    DeleteTeacher,
-    UpdateTeacher,
-    GetTeachersByCourse,
 )
 
 app_name = 'students'
 
 urlpatterns = [
     path("", GetStudents.as_view(), name="list"),
-    path("teachers/", GetTeachers.as_view(), name="teachers-list"),
     path("new/", CreateStudent.as_view(), name="create"),
     path("edit/<int:pk>/", UpdateStudent.as_view(), name="update"),
     path("delete/<int:pk>/", DeleteStudent.as_view(), name="delete"),
-    path("delete-teacher/<int:pk>/", DeleteTeacher.as_view(), name="delete-teacher"),
-    path("create-teacher/", CreateTeacher.as_view(), name="create-teacher"),
-    path("edit-teacher/<int:pk>/", UpdateTeacher.as_view(), name="update-teacher"),
-    path(
-        "teachers-by-course/<str:course_name>",
-        GetTeachersByCourse.as_view(),
-        name="teachers-by-course",
-    ),
     path(
         "students-by-course/<str:course_name>",
         GetStudentsByCourse.as_view(),

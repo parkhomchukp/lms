@@ -7,7 +7,7 @@
   </button>
   <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
       {% for course in context.courses %}
-      <li><a class="dropdown-item" href="{% url "students:teachers-by-course" course_name=course.name %}">{{ course.name }}</a></li>
+      <li><a class="dropdown-item" href="{% url "teachers:teachers-by-course" course_name=course.name %}">{{ course.name }}</a></li>
       {%endfor%}
   </ul>
 </div>
@@ -36,10 +36,10 @@
         <td>{{ teacher.email }}</td>
         <td>{{ teacher.phone_number }}</td>
         <td>
-            <a type="button" class="btn btn-danger" href="{% url "students:delete-teacher" pk=teacher.id %}">Delete</a>
+            <a type="button" class="btn btn-danger" href="{% url "teachers:delete" pk=teacher.id %}">Delete</a>
         </td>
         <td>
-            <a type="button" class="btn btn-success" href="{% url "students:update-teacher" pk=teacher.id %}">Update</a>
+            <a type="button" class="btn btn-success" href="{% url "teachers:update" pk=teacher.id %}">Update</a>
         </td>
     </tr>
     {% endfor %}

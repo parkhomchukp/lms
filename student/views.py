@@ -6,8 +6,8 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from student.forms import TeacherBaseForm, TeacherUpdateForm, RegistrationStudentForm
-from student.models import Student, Teacher
+from student.forms import RegistrationStudentForm
+from student.models import Student
 from courses.models import Course
 from webargs.djangoparser import use_args
 from webargs import fields
@@ -104,28 +104,15 @@ class DeleteStudent(DeleteView):
         return self.post(request, *args, **kwargs)
 
 
-class CreateTeacher(CreateView):
-    template_name = "teacher_create.html"
-    model = Teacher
-    fields = "__all__"
-    initial = {
-        "first_name": "default",
-        "last_name": "default",
-    }
-    success_url = reverse_lazy("students:teachers-list")
+class RegistrationStudent(CreateView):
+    template_name = "registration/registration.html"
+    form_class = RegistrationStudentForm
+    success_url = reverse_lazy("index")
 
     def form_valid(self, form):
-        form.save(commit=False)
-        first_name = form.cleaned_data["first_name"]
-        last_name = form.cleaned_data["last_name"]
-        if first_name == last_name:
-            form._errors["first_name"] = ErrorList(
-                ["Firs and last names can't be equal"]
-            )
-            form._errors["last_name"] = ErrorList(
-                [u"Teacher with this email already exists"]
-            )
-            return super().form_invalid(form)
+        self.object = form.save(commit=False)
+        self.object.is_active = False
+        self.object.save()
         return super().form_valid(form)
 
 
@@ -139,56 +126,6 @@ class GetStudentsByCourse(ListView):
         courses = Course.objects.all()
         context = {"students": students, "courses": courses}
         return context
-
-
-class GetTeachers(ListView):
-    template_name = "teachers_table.html"
-    context_object_name = "context"
-
-    def get_queryset(self):
-        teachers = Teacher.objects.all().order_by("-id")
-        courses = Course.objects.all()
-        context = {"teachers": teachers, "courses": courses}
-        return context
-
-
-class DeleteTeacher(DeleteView):
-    model = Teacher
-    success_url = reverse_lazy("students:teachers-list")
-
-    def get(self, request, *args, **kwargs):
-        return self.post(request, *args, **kwargs)
-
-
-class UpdateTeacher(UpdateView):
-    model = Teacher
-    fields = "__all__"
-    template_name = "teachers_update.html"
-    success_url = reverse_lazy("students:teachers-list")
-
-
-class GetTeachersByCourse(ListView):
-    template_name = "teachers_table.html"
-    context_object_name = "context"
-
-    def get_queryset(self):
-        course_name = self.kwargs["course_name"]
-        teachers = Teacher.objects.all().filter(course__name__contains=course_name)
-        courses = Course.objects.all()
-        context = {"teachers": teachers, "courses": courses}
-        return context
-
-
-class RegistrationStudent(CreateView):
-    template_name = "registration/registration.html"
-    form_class = RegistrationStudentForm
-    success_url = reverse_lazy("index")
-
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-        self.object.is_active = False
-        self.object.save()
-        return super().form_valid(form)
 
 
 def error_404(request, exception):
