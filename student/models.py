@@ -51,12 +51,17 @@ class Student(Person):
     )
     enroll_date = models.DateField(
         null=False,
-        default=datetime.date.today(),
+        default=datetime.date.today,
     )
     graduate_date = models.DateField(
         null=True,
-        default=datetime.date.today(),
+        default=datetime.date.today,
     )
+
+    REQUIRED_FIELDS = [
+        "email",
+    ]
+    USERNAME_FIELD = "email"
 
     def __str__(self):
         return f'{self.full_name()}, {self.age()}, {self.email} ({self.id})'

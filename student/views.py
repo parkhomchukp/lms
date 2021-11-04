@@ -1,21 +1,25 @@
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, LogoutView
+from django.core.mail import EmailMessage
 from django.db.models import Q
 from django.forms.utils import ErrorList
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from student.forms import TeacherBaseForm, TeacherUpdateForm
+from student.forms import TeacherBaseForm, TeacherUpdateForm, RegistrationStudentForm
 from student.models import Student, Course, Teacher
 from webargs.djangoparser import use_args
 from webargs import fields
 from django.urls import reverse, reverse_lazy
 from django.views.generic import TemplateView, CreateView, UpdateView
+from django.contrib.auth.models import User
+from django.contrib.auth.mixins import LoginRequiredMixin
 # Create your views here.
 
 
-class IndexView(TemplateView):
+class IndexView(LoginRequiredMixin, TemplateView):
     template_name = "index.html"
+    login_url = reverse_lazy("students:login")
     extra_context = {"site_name": "Pavlo"}
 
 
@@ -77,6 +81,10 @@ class UpdateStudent(UpdateView):
 
 class UserLogin(LoginView):
     pass
+
+
+class UserLogout(LogoutView):
+    template_name = "registration/logged_out.html"
 
 
 def delete_student(request, pk):
@@ -161,6 +169,26 @@ def sort_teachers_by_course(request, course_name):
     )
 
 
+class RegistrationStudent(CreateView):
+    template_name = "registration/registration.html"
+    form_class = RegistrationStudentForm
+    success_url = reverse_lazy("index")
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.is_active = False
+        self.object.save()
+        return super().form_valid(form)
+
+
 def error_404(request, exception):
     data = {}
     return render(request, "student/404.html", data)
+
+
+def send_email(request):
+    email = EmailMessage(
+        subject="registration lms", body="test text", to=["pavelparkhomchuk@gmail.com"]
+    )
+    email.send()
+    return HttpResponse("Done")
