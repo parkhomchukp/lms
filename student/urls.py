@@ -16,13 +16,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from student.views import (
-    get_students,
-    delete_student,
-    create_teacher,
-    sort_students_by_course,
-    get_teachers,
-    delete_teacher,
-    update_teacher,
     sort_teachers_by_course,
     CreateStudent,
     UpdateStudent,
@@ -30,27 +23,35 @@ from student.views import (
     RegistrationStudent,
     UserLogout,
     send_email,
+    GetStudents,
+    GetStudentsByCourse,
+    DeleteStudent,
+    CreateTeacher,
+    GetTeachers,
+    DeleteTeacher,
+    UpdateTeacher,
+    GetTeachersByCourse,
 )
 
 app_name = 'students'
 
 urlpatterns = [
-    path("", get_students, name="list"),
-    path("teachers/", get_teachers, name="teachers-list"),
+    path("", GetStudents.as_view(), name="list"),
+    path("teachers/", GetTeachers.as_view(), name="teachers-list"),
     path("new/", CreateStudent.as_view(), name="create"),
     path("edit/<int:pk>/", UpdateStudent.as_view(), name="update"),
-    path("delete/<int:pk>/", delete_student, name="delete"),
-    path("delete-teacher/<int:pk>/", delete_teacher, name="delete-teacher"),
-    path("create-teacher/", create_teacher, name="create-teacher"),
-    path("edit-teacher/<int:pk>/", update_teacher, name="update-teacher"),
+    path("delete/<int:pk>/", DeleteStudent.as_view(), name="delete"),
+    path("delete-teacher/<int:pk>/", DeleteTeacher.as_view(), name="delete-teacher"),
+    path("create-teacher/", CreateTeacher.as_view(), name="create-teacher"),
+    path("edit-teacher/<int:pk>/", UpdateTeacher.as_view(), name="update-teacher"),
     path(
         "teachers-by-course/<str:course_name>",
-        sort_teachers_by_course,
+        GetTeachersByCourse.as_view(),
         name="teachers-by-course",
     ),
     path(
         "students-by-course/<str:course_name>",
-        sort_students_by_course,
+        GetStudentsByCourse.as_view(),
         name="by-course",
     ),
     path("login/", UserLogin.as_view(), name="login"),
