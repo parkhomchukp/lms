@@ -178,16 +178,6 @@ class GetTeachersByCourse(ListView):
         return context
 
 
-def sort_teachers_by_course(request, course_name):
-    teachers = Teacher.objects.all().filter(course__name__contains=course_name)
-    courses = Course.objects.all()
-    return render(
-        request=request,
-        template_name="teachers_table.html",
-        context={"teachers": teachers, "courses": courses},
-    )
-
-
 class RegistrationStudent(CreateView):
     template_name = "registration/registration.html"
     form_class = RegistrationStudentForm

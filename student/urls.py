@@ -16,7 +16,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from student.views import (
-    sort_teachers_by_course,
     CreateStudent,
     UpdateStudent,
     UserLogin,
