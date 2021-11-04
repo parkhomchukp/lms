@@ -45,7 +45,7 @@ class Person(models.Model):
 
 
 class Student(Person):
-    course = models.ForeignKey("student.Course", null=True, on_delete=models.SET_NULL)
+    course = models.ForeignKey("courses.Course", null=True, on_delete=models.SET_NULL)
     birthdate = models.DateField(
         null=True, default=datetime.date.today, validators=[age_validator]
     )
@@ -85,22 +85,8 @@ class Student(Person):
             st.save()
 
 
-class Course(models.Model):
-    id = models.UUIDField(
-        primary_key=True, unique=True, default=uuid.uuid4, editable=False
-    )
-    name = models.CharField(null=False, max_length=100)
-    start_date = models.DateField(null=True, default=datetime.datetime.today)
-    count_of_students = models.IntegerField(
-        null=True,
-    )
-
-    def __str__(self):
-        return f"{self.name}"
-
-
 class Teacher(Person):
-    course = models.ManyToManyField(to="student.Course")
+    course = models.ManyToManyField(to="courses.Course")
 
     def __str__(self):
         return f"{self.email} ({self.id})"

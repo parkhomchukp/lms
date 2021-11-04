@@ -7,7 +7,8 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from student.forms import TeacherBaseForm, TeacherUpdateForm, RegistrationStudentForm
-from student.models import Student, Course, Teacher
+from student.models import Student, Teacher
+from courses.models import Course
 from webargs.djangoparser import use_args
 from webargs import fields
 from django.urls import reverse, reverse_lazy
