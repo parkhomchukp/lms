@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "search",
     "courses",
     "teachers",
+    "django_inlinecss",
 ]
 
 MIDDLEWARE = [

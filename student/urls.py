@@ -25,6 +25,8 @@ from student.views import (
     GetStudents,
     GetStudentsByCourse,
     DeleteStudent,
+    ActivateUser,
+    test_view,
 )
 
 app_name = 'students'
@@ -43,6 +45,8 @@ urlpatterns = [
     path("registration/", RegistrationStudent.as_view(), name="registration"),
     path("logout/", UserLogout.as_view(), name="logout"),
     path("send-email/", send_email, name="send_email"),
+    path("activate/<str:uuid64>/<str:token>", ActivateUser.as_view(), name="activate"),
+    path("test/", test_view, name="test"),
 ]
 
 handler404 = "student.views.error_404"
