@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms.utils import ErrorList
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
@@ -7,9 +8,10 @@ from courses.models import Course
 
 
 # Create your views here.
-class GetTeachers(ListView):
+class GetTeachers(LoginRequiredMixin, ListView):
     template_name = "teachers_table.html"
     context_object_name = "context"
+    login_url = reverse_lazy("students:login")
 
     def get_queryset(self):
         teachers = Teacher.objects.all().order_by("-id")
@@ -18,9 +20,10 @@ class GetTeachers(ListView):
         return context
 
 
-class GetTeachersByCourse(ListView):
+class GetTeachersByCourse(LoginRequiredMixin, ListView):
     template_name = "teachers_table.html"
     context_object_name = "context"
+    login_url = reverse_lazy("students:login")
 
     def get_queryset(self):
         course_name = self.kwargs["course_name"]
@@ -30,7 +33,7 @@ class GetTeachersByCourse(ListView):
         return context
 
 
-class CreateTeacher(CreateView):
+class CreateTeacher(LoginRequiredMixin, CreateView):
     template_name = "teacher_create.html"
     model = Teacher
     fields = "__all__"
@@ -39,6 +42,7 @@ class CreateTeacher(CreateView):
         "last_name": "default",
     }
     success_url = reverse_lazy("teachers:list")
+    login_url = reverse_lazy("students:login")
 
     def form_valid(self, form):
         form.save(commit=False)
@@ -55,16 +59,18 @@ class CreateTeacher(CreateView):
         return super().form_valid(form)
 
 
-class UpdateTeacher(UpdateView):
+class UpdateTeacher(LoginRequiredMixin, UpdateView):
     model = Teacher
     fields = "__all__"
     template_name = "teachers_update.html"
     success_url = reverse_lazy("teachers:list")
+    login_url = reverse_lazy("students:login")
 
 
-class DeleteTeacher(DeleteView):
+class DeleteTeacher(LoginRequiredMixin, DeleteView):
     model = Teacher
     success_url = reverse_lazy("teachers:list")
+    login_url = reverse_lazy("students:login")
 
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)

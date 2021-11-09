@@ -36,9 +36,10 @@ class IndexView(LoginRequiredMixin, TemplateView):
     extra_context = {"site_name": "Pavlo"}
 
 
-class GetStudents(ListView):
+class GetStudents(LoginRequiredMixin, ListView):
     template_name = "students_table.html"
     context_object_name = "context"
+    login_url = reverse_lazy("students:login")
 
     @use_args(
         {"first_name": fields.Str(required=False), "text": fields.Str(required=False)},
@@ -64,7 +65,7 @@ class GetStudents(ListView):
         return context
 
 
-class CreateStudent(CreateView):
+class CreateStudent(LoginRequiredMixin, CreateView):
     template_name = "students_create.html"
     model = Student
     fields = "__all__"
@@ -73,6 +74,7 @@ class CreateStudent(CreateView):
         "last_name": "default",
     }
     success_url = reverse_lazy("students:list")
+    login_url = reverse_lazy("students:login")
 
     def form_valid(self, form):
         form.save(commit=False)
@@ -87,11 +89,12 @@ class CreateStudent(CreateView):
         return super().form_valid(form)
 
 
-class UpdateStudent(UpdateView):
+class UpdateStudent(LoginRequiredMixin, UpdateView):
     model = Student
     template_name = "students_update.html"
     fields = "__all__"
     success_url = reverse_lazy("students:list")
+    login_url = reverse_lazy("students:login")
 
 
 class UserLogin(LoginView):
@@ -102,9 +105,10 @@ class UserLogout(LogoutView):
     template_name = "registration/student_logged_out.html"
 
 
-class DeleteStudent(DeleteView):
+class DeleteStudent(LoginRequiredMixin, DeleteView):
     model = Student
     success_url = reverse_lazy("students:list")
+    login_url = reverse_lazy("students:login")
 
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
@@ -123,9 +127,10 @@ class RegistrationStudent(CreateView):
         return super().form_valid(form)
 
 
-class GetStudentsByCourse(ListView):
+class GetStudentsByCourse(LoginRequiredMixin, ListView):
     template_name = "students_table.html"
     context_object_name = "context"
+    login_url = reverse_lazy("students:login")
 
     def get_queryset(self):
         course_name = self.kwargs["course_name"]

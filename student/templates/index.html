@@ -41,6 +41,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                {% if user.is_authenticated %}
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="{% url "students:list" %}">All students
                     table</a>
@@ -55,6 +56,7 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url "teachers:create" %}">Create teacher</a>
                 </li>
+                {% endif %}
                 <li class="nav-item">
                         <a class="nav-link"
                            href="{% url "students:registration" %}"> Registration</a>
@@ -75,10 +77,12 @@
                 {% endblock %}
                 </li>
             </ul>
+            {% if user.is_authenticated %}
             <form class="d-flex" action="{% url 'search:index' %}" method="GET">
                 <input id="search" name="q" class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
                 <button class="btn btn-outline-success" type="submit">Search</button>
             </form>
+            {% endif %}
         </div>
     </div>
 </nav>
