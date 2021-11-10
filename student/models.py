@@ -1,9 +1,14 @@
 import datetime
 
 from django.contrib.auth.models import User
-from django.core.validators import MinLengthValidator
+from django.core.validators import (
+    MinLengthValidator,
+    MinValueValidator,
+    MaxValueValidator,
+)
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils.timezone import now
 from faker import Faker
 
 from django.db import models
@@ -27,9 +32,14 @@ class ExtendedUser(User):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    phone = PhoneNumberField(blank=True, help_text="Contact phone number")
-    birthdate = models.DateField(blank=True, null=True)
-    photo = models.ImageField(upload_to="photos/")
+    TYPE_CHOICES = [("TC", "Teacher"), ("ST", "Student"), ("MT", "Mentor")]
+    type = models.CharField(
+        null=False, max_length=2, default="ST", choices=TYPE_CHOICES
+    )
+    phone = PhoneNumberField(blank=True, help_text="Contact phone number", region="UA")
+    birthdate = models.DateField(blank=True, null=True, default=now)
+    photo = models.ImageField(upload_to="media/photos/")
+    course = models.ForeignKey("courses.Course", null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return f"{self.user.first_name}_{self.user.last_name}"
