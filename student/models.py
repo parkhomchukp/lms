@@ -1,4 +1,5 @@
 import datetime
+import uuid
 
 from django.contrib.auth.models import User
 from django.core.validators import (
@@ -15,7 +16,12 @@ from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 
 from .managers import PeopleManager
-from .validators import no_elon_validator, domain_validator, age_validator
+from .validators import (
+    no_elon_validator,
+    domain_validator,
+    age_validator,
+    validate_file_extension,
+)
 
 
 # Create your models here.
@@ -95,11 +101,11 @@ class Student(Person):
         default=datetime.date.today,
     )
     photo = models.ImageField(
-        default="default.png",
-        blank=True,
+        upload_to="photos",
+        default="photos/default.png",
     )
     cv = models.FileField(
-        default="default.txt", blank=True, validators=[validate_file_extension]
+        upload_to="cv", default="cv/default.txt", validators=[validate_file_extension]
     )
     number_of_referals = models.IntegerField(default=0, null=True)
 
@@ -128,27 +134,6 @@ class Student(Person):
                 birthdate=faker.date_time_between(start_date="-30y", end_date="-18y"),
             )
             st.save()
-
-
-class Course(models.Model):
-    id = models.UUIDField(
-        primary_key=True, unique=True, default=uuid.uuid4, editable=False
-    )
-    name = models.CharField(null=False, max_length=100)
-    start_date = models.DateField(null=True, default=datetime.datetime.today)
-    count_of_students = models.IntegerField(
-        null=True,
-    )
-
-    def __str__(self):
-        return f"{self.name}"
-
-
-class Teacher(Person):
-    course = models.ManyToManyField(to="student.Course")
-
-    def __str__(self):
-        return f"{self.email} ({self.id})"
 
 
 class Invite:

@@ -68,11 +68,13 @@ class GetStudents(LoginRequiredMixin, ListView):
 class CreateStudent(LoginRequiredMixin, CreateView):
     template_name = "students_create.html"
     model = Student
-    fields = "__all__"
-    initial = {
-        "first_name": "default",
-        "last_name": "default",
-    }
+    fields = [
+        "first_name",
+        "last_name",
+        "email",
+        "phone_number",
+        "course",
+    ]
     success_url = reverse_lazy("students:list")
     login_url = reverse_lazy("students:login")
 
@@ -98,7 +100,8 @@ class UpdateStudent(LoginRequiredMixin, UpdateView):
 
 
 class UserLogin(LoginView):
-    pass
+    def get_redirect_url(self):
+        return reverse_lazy("index")
 
 
 class UserLogout(LogoutView):
