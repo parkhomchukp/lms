@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm, TextInput, EmailField
-from student.models import Student, Teacher
+from student.models import Student
 from django.contrib.auth.forms import UserCreationForm
 
 
@@ -65,8 +65,8 @@ class StudentCreateForm(PersonBaseForm):
 
 
 class StudentUpdateForm(PersonBaseForm):
-    class Meta(StudentCreateForm.Meta):
-        pass
+    class Meta(PersonBaseForm.Meta):
+        fields = ["first_name", "last_name", "email", "phone_number", "birthdate"]
 
 
 class TeacherBaseForm(PersonBaseForm):

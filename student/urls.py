@@ -16,47 +16,37 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from student.views import (
-    get_students,
-    delete_student,
-    create_teacher,
-    sort_students_by_course,
-    get_teachers,
-    delete_teacher,
-    update_teacher,
-    sort_teachers_by_course,
     CreateStudent,
     UpdateStudent,
     UserLogin,
     RegistrationStudent,
     UserLogout,
     send_email,
+    GetStudents,
+    GetStudentsByCourse,
+    DeleteStudent,
+    ActivateUser,
+    test_view,
 )
 
 app_name = 'students'
 
 urlpatterns = [
-    path("", get_students, name="list"),
-    path("teachers/", get_teachers, name="teachers-list"),
+    path("", GetStudents.as_view(), name="list"),
     path("new/", CreateStudent.as_view(), name="create"),
     path("edit/<int:pk>/", UpdateStudent.as_view(), name="update"),
-    path("delete/<int:pk>/", delete_student, name="delete"),
-    path("delete-teacher/<int:pk>/", delete_teacher, name="delete-teacher"),
-    path("create-teacher/", create_teacher, name="create-teacher"),
-    path("edit-teacher/<int:pk>/", update_teacher, name="update-teacher"),
-    path(
-        "teachers-by-course/<str:course_name>",
-        sort_teachers_by_course,
-        name="teachers-by-course",
-    ),
+    path("delete/<int:pk>/", DeleteStudent.as_view(), name="delete"),
     path(
         "students-by-course/<str:course_name>",
-        sort_students_by_course,
+        GetStudentsByCourse.as_view(),
         name="by-course",
     ),
     path("login/", UserLogin.as_view(), name="login"),
     path("registration/", RegistrationStudent.as_view(), name="registration"),
     path("logout/", UserLogout.as_view(), name="logout"),
     path("send-email/", send_email, name="send_email"),
+    path("activate/<str:uuid64>/<str:token>", ActivateUser.as_view(), name="activate"),
+    path("test/", test_view, name="test"),
 ]
 
 handler404 = "student.views.error_404"

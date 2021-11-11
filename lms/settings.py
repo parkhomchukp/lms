@@ -47,9 +47,11 @@ INSTALLED_APPS = [
     "phonenumber_field",
     "student",
     "groups",
-    "teachers",
     "django_extensions",
     "search",
+    "courses",
+    "teachers",
+    "django_inlinecss",
 ]
 
 MIDDLEWARE = [

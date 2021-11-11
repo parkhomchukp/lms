@@ -1,20 +1,33 @@
+from django.contrib.auth import login
 from django.contrib.auth.views import LoginView, LogoutView
 from django.core.mail import EmailMessage
 from django.db.models import Q
 from django.forms.utils import ErrorList
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_decode
 from django.views.decorators.csrf import csrf_exempt
 
-from student.forms import TeacherBaseForm, TeacherUpdateForm, RegistrationStudentForm
-from student.models import Student, Course, Teacher
+from student.forms import RegistrationStudentForm
+from student.models import Student, ExtendedUser
+from courses.models import Course
 from webargs.djangoparser import use_args
 from webargs import fields
 from django.urls import reverse, reverse_lazy
-from django.views.generic import TemplateView, CreateView, UpdateView
+from django.views.generic import (
+    TemplateView,
+    CreateView,
+    UpdateView,
+    ListView,
+    DeleteView,
+    RedirectView,
+)
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
 # Create your views here.
+from student.services.emails import send_registration_email
+from student.token_generator import TokenGenerator
 
 
 class IndexView(LoginRequiredMixin, TemplateView):
@@ -23,33 +36,36 @@ class IndexView(LoginRequiredMixin, TemplateView):
     extra_context = {"site_name": "Pavlo"}
 
 
-@use_args(
-    {"first_name": fields.Str(required=False), "text": fields.Str(required=False)},
-    location="query",
-)
-def get_students(request, params):
-    students = Student.objects.all().order_by('-id')
-    courses = Course.objects.all()
+class GetStudents(LoginRequiredMixin, ListView):
+    template_name = "students_table.html"
+    context_object_name = "context"
+    login_url = reverse_lazy("students:login")
 
-    for param_name, param_value in params.items():
-        if param_value:
-            if param_name == 'text':
-                students = students.filter(
-                    Q(first_name__contains=param_value)
-                    | Q(last_name__contains=param_value)
-                    | Q(email__contains=param_value)
-                )
-            else:
-                students = students.filter(**{param_name: param_value})
-
-    return render(
-        request=request,
-        template_name="students_table.html",
-        context={"students": students, "courses": courses},
+    @use_args(
+        {"first_name": fields.Str(required=False), "text": fields.Str(required=False)},
+        location="query",
     )
+    def get_queryset(self, params):
+        students = Student.objects.all().order_by("-id")
+        courses = Course.objects.all()
+        for param_name, param_value in params.items():
+            if param_value:
+                if param_name == "text":
+                    students = students.filter(
+                        Q(first_name__icontains=param_value)
+                        | Q(last_name__icontains=param_value)
+                        | Q(email__icontains=param_value)
+                    )
+                else:
+                    students = students.filter(**{param_name: param_value})
+        context = {
+            "students": students,
+            "courses": courses,
+        }
+        return context
 
 
-class CreateStudent(CreateView):
+class CreateStudent(LoginRequiredMixin, CreateView):
     template_name = "students_create.html"
     model = Student
     fields = "__all__"
@@ -58,6 +74,7 @@ class CreateStudent(CreateView):
         "last_name": "default",
     }
     success_url = reverse_lazy("students:list")
+    login_url = reverse_lazy("students:login")
 
     def form_valid(self, form):
         form.save(commit=False)
@@ -72,11 +89,12 @@ class CreateStudent(CreateView):
         return super().form_valid(form)
 
 
-class UpdateStudent(UpdateView):
+class UpdateStudent(LoginRequiredMixin, UpdateView):
     model = Student
     template_name = "students_update.html"
     fields = "__all__"
     success_url = reverse_lazy("students:list")
+    login_url = reverse_lazy("students:login")
 
 
 class UserLogin(LoginView):
@@ -84,89 +102,16 @@ class UserLogin(LoginView):
 
 
 class UserLogout(LogoutView):
-    template_name = "registration/logged_out.html"
+    template_name = "registration/student_logged_out.html"
 
 
-def delete_student(request, pk):
-    student = get_object_or_404(Student, id=pk)
-    student.delete()
+class DeleteStudent(LoginRequiredMixin, DeleteView):
+    model = Student
+    success_url = reverse_lazy("students:list")
+    login_url = reverse_lazy("students:login")
 
-    return HttpResponseRedirect(reverse("students:list"))
-
-
-@csrf_exempt
-def create_teacher(request):
-    form = None
-    if request.method == "POST":
-        form = TeacherBaseForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse("students:list"))
-
-    elif request.method == "GET":
-        form = TeacherBaseForm()
-
-    return render(
-        request=request,
-        template_name="teacher_create.html",
-        context={"form": form},
-    )
-
-
-def sort_students_by_course(request, course_name):
-    students = Student.objects.all().filter(course__name__contains=course_name)
-    courses = Course.objects.all()
-    return render(
-        request=request,
-        template_name="students_table.html",
-        context={"students": students, "courses": courses},
-    )
-
-
-def get_teachers(request):
-    teachers = Teacher.objects.all().order_by("-id")
-    courses = Course.objects.all()
-    return render(
-        request=request,
-        template_name="teachers_table.html",
-        context={"teachers": teachers, "courses": courses},
-    )
-
-
-def delete_teacher(request, pk):
-    teacher = get_object_or_404(Teacher, id=pk)
-    teacher.delete()
-
-    return HttpResponseRedirect(reverse("students:teachers-list"))
-
-
-@csrf_exempt
-def update_teacher(request, pk):
-    form = None
-    teacher = get_object_or_404(Teacher, id=pk)
-
-    if request.method == "POST":
-        form = TeacherUpdateForm(request.POST, instance=teacher)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse("students:teachers-list"))
-
-    elif request.method == "GET":
-        form = TeacherUpdateForm(instance=teacher)
-
-    return render(
-        request=request, template_name="teachers_update.html", context={"form": form}
-    )
-
-
-def sort_teachers_by_course(request, course_name):
-    teachers = Teacher.objects.all().filter(course__name__contains=course_name)
-    courses = Course.objects.all()
-    return render(
-        request=request,
-        template_name="teachers_table.html",
-        context={"teachers": teachers, "courses": courses},
-    )
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
 
 
 class RegistrationStudent(CreateView):
@@ -178,7 +123,40 @@ class RegistrationStudent(CreateView):
         self.object = form.save(commit=False)
         self.object.is_active = False
         self.object.save()
+        send_registration_email(request=self.request, user_instance=self.object)
         return super().form_valid(form)
+
+
+class GetStudentsByCourse(LoginRequiredMixin, ListView):
+    template_name = "students_table.html"
+    context_object_name = "context"
+    login_url = reverse_lazy("students:login")
+
+    def get_queryset(self):
+        course_name = self.kwargs["course_name"]
+        students = Student.objects.all().filter(course__name__contains=course_name)
+        courses = Course.objects.all()
+        context = {"students": students, "courses": courses}
+        return context
+
+
+class ActivateUser(RedirectView):
+    url = reverse_lazy("teachers:create")
+
+    def get(self, request, uuid64, token, *args, **kwargs):
+
+        try:
+            user_pk = force_bytes(urlsafe_base64_decode(uuid64))
+            current_user = User.objects.get(pk=user_pk)
+        except (User.DoesNotExist, ValueError, TypeError):
+            return HttpResponse("Wrong data")
+
+        if current_user and TokenGenerator().check_token(current_user, token):
+            current_user.is_active = True
+            current_user.save()
+            login(request, current_user)
+            return super().get(request, *args, **kwargs)
+        return HttpResponse("Wrong data")
 
 
 def error_404(request, exception):
@@ -192,3 +170,7 @@ def send_email(request):
     )
     email.send()
     return HttpResponse("Done")
+
+
+def test_view(request):
+    return HttpResponse(ExtendedUser.people.get_staff_users())

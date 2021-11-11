@@ -1,9 +1,13 @@
-from django.forms import ModelForm
-
 from teachers.models import Teacher
+from student.forms import PersonBaseForm
 
 
-class TeacherCreateForm(ModelForm):
+class TeacherBaseForm(PersonBaseForm):
     class Meta:
         model = Teacher
-        fields = ['first_name', 'last_name', 'department', 'email']
+        fields = ["first_name", "last_name", "email", "phone_number", "course"]
+
+
+class TeacherUpdateForm(PersonBaseForm):
+    class Meta(TeacherBaseForm.Meta):
+        pass

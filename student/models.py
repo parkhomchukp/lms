@@ -1,21 +1,56 @@
 import datetime
-import uuid
 
-from django.core.validators import MinLengthValidator, RegexValidator
+from django.contrib.auth.models import User
+from django.core.validators import (
+    MinLengthValidator,
+    MinValueValidator,
+    MaxValueValidator,
+)
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.utils.timezone import now
 from faker import Faker
 
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 
-from .validators import (
-    no_elon_validator,
-    domain_validator,
-    age_validator,
-    validate_file_extension,
-)
+from .managers import PeopleManager
+from .validators import no_elon_validator, domain_validator, age_validator
 
 
 # Create your models here.
+class ExtendedUser(User):
+    people = PeopleManager()
+
+    class Meta:
+        proxy = True
+        ordering = ("first_name",)
+
+    def some_action(self):
+        print(self.username)
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    TYPE_CHOICES = [("TC", "Teacher"), ("ST", "Student"), ("MT", "Mentor")]
+    type = models.CharField(
+        null=False, max_length=2, default="ST", choices=TYPE_CHOICES
+    )
+    phone = PhoneNumberField(blank=True, help_text="Contact phone number", region="UA")
+    birthdate = models.DateField(blank=True, null=True, default=now)
+    photo = models.ImageField(upload_to="media/photos/")
+    course = models.ForeignKey("courses.Course", null=True, on_delete=models.SET_NULL)
+
+    def __str__(self):
+        return f"{self.user.first_name}_{self.user.last_name}"
+
+
+@receiver(post_save, sender=User)
+def update_profile_signal(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
+
+
 class Person(models.Model):
     class Meta:
         abstract = True
@@ -40,9 +75,6 @@ class Person(models.Model):
         validators=[no_elon_validator, domain_validator],
         unique=True,
     )
-    # phone_number = models.CharField(
-    #     null=True, max_length=14, unique=True, validators=[RegexValidator("\d{10,14}")]
-    # )
     phone_number = PhoneNumberField(
         unique=True,
         null=True,
@@ -50,7 +82,7 @@ class Person(models.Model):
 
 
 class Student(Person):
-    course = models.ForeignKey("student.Course", null=True, on_delete=models.SET_NULL)
+    course = models.ForeignKey("courses.Course", null=True, on_delete=models.SET_NULL)
     birthdate = models.DateField(
         null=True, default=datetime.date.today, validators=[age_validator]
     )

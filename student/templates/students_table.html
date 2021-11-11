@@ -6,7 +6,7 @@
     Dropdown button
   </button>
   <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-      {% for course in courses %}
+      {% for course in context.courses %}
       <li><a class="dropdown-item" href="{% url "students:by-course" course_name=course.name %}">{{ course.name }}</a></li>
       {%endfor%}
   </ul>
@@ -32,7 +32,7 @@
     </tr>
     </thead>
     <tbody>
-    {% for student in students %}
+    {% for student in context.students %}
     <tr>
         <th scope="row">{{ student.id }}</th>
         <th><img src="{{ student.photo.url }}" width="70" height="80"></th>
