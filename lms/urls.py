@@ -15,7 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from student.views import IndexView
+from student.views import hello, index, IndexView
+from django.conf.urls.static import static
+from django.conf import settings
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -24,4 +27,4 @@ urlpatterns = [
     path("teachers/", include("teachers.urls")),
     path("groups/", include("groups.urls")),
     path("search/", include("search.urls")),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

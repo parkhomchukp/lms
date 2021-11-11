@@ -52,12 +52,21 @@ class PersonBaseForm(ModelForm):
 
 
 class StudentCreateForm(PersonBaseForm):
-    pass
+    class Meta(PersonBaseForm.Meta):
+        fields = [
+            "first_name",
+            "last_name",
+            "email",
+            "phone_number",
+            "course",
+            "photo",
+            "cv",
+        ]
 
 
 class StudentUpdateForm(PersonBaseForm):
-    class Meta(PersonBaseForm.Meta):
-        fields = ["first_name", "last_name", "email", "phone_number", "birthdate"]
+    class Meta(StudentCreateForm.Meta):
+        pass
 
 
 class TeacherBaseForm(PersonBaseForm):
