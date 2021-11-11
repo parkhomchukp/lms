@@ -16,10 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from student.views import (
-    hello,
     get_students,
-    create_student,
-    update_student,
     delete_student,
     create_teacher,
     sort_students_by_course,
@@ -27,6 +24,12 @@ from student.views import (
     delete_teacher,
     update_teacher,
     sort_teachers_by_course,
+    CreateStudent,
+    UpdateStudent,
+    UserLogin,
+    RegistrationStudent,
+    UserLogout,
+    send_email,
 )
 
 app_name = 'students'
@@ -34,8 +37,8 @@ app_name = 'students'
 urlpatterns = [
     path("", get_students, name="list"),
     path("teachers/", get_teachers, name="teachers-list"),
-    path("new/", create_student, name="create"),
-    path("edit/<int:pk>/", update_student, name="update"),
+    path("new/", CreateStudent.as_view(), name="create"),
+    path("edit/<int:pk>/", UpdateStudent.as_view(), name="update"),
     path("delete/<int:pk>/", delete_student, name="delete"),
     path("delete-teacher/<int:pk>/", delete_teacher, name="delete-teacher"),
     path("create-teacher/", create_teacher, name="create-teacher"),
@@ -50,6 +53,10 @@ urlpatterns = [
         sort_students_by_course,
         name="by-course",
     ),
+    path("login/", UserLogin.as_view(), name="login"),
+    path("registration/", RegistrationStudent.as_view(), name="registration"),
+    path("logout/", UserLogout.as_view(), name="logout"),
+    path("send-email/", send_email, name="send_email"),
 ]
 
 handler404 = "student.views.error_404"

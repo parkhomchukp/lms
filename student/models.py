@@ -43,7 +43,10 @@ class Person(models.Model):
     # phone_number = models.CharField(
     #     null=True, max_length=14, unique=True, validators=[RegexValidator("\d{10,14}")]
     # )
-    phone_number = PhoneNumberField(unique=True, null=True)
+    phone_number = PhoneNumberField(
+        unique=True,
+        null=True,
+    )
 
 
 class Student(Person):
@@ -67,6 +70,11 @@ class Student(Person):
         default="default.txt", blank=True, validators=[validate_file_extension]
     )
     number_of_referals = models.IntegerField(default=0, null=True)
+
+    REQUIRED_FIELDS = [
+        "email",
+    ]
+    USERNAME_FIELD = "email"
 
     def __str__(self):
         return f'{self.full_name()}, {self.age()}, {self.email} ({self.id})'

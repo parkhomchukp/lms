@@ -1,6 +1,24 @@
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from django.forms import ModelForm, TextInput
+from django.forms import ModelForm, TextInput, EmailField
 from student.models import Student, Teacher
+from django.contrib.auth.forms import UserCreationForm
+
+
+class RegistrationStudentForm(UserCreationForm):
+
+    email = EmailField(
+        max_length=200, help_text="registration without email is not possible!"
+    )
+
+    class Meta:
+        model = User
+        fields = [
+            "username",
+            "email",
+            "password1",
+            "password2",
+        ]
 
 
 class PersonBaseForm(ModelForm):
