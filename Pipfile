@@ -16,6 +16,7 @@ phonenumbers = "*"
 python-dotenv = "*"
 django-inlinecss = '*'
 six = '*'
+pillow = "*"
 
 [dev-packages]
 
