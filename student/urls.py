@@ -21,13 +21,11 @@ from student.views import (
     UserLogin,
     RegistrationStudent,
     UserLogout,
-    send_email,
     GetStudents,
     GetStudentsByCourse,
     DeleteStudent,
     ActivateUser,
     Error404,
-    test_view,
 )
 
 app_name = 'students'
