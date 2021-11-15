@@ -22,7 +22,7 @@ def send_registration_email(request, user_instance):
     email = EmailMessage(
         subject=mail_subject,
         body=message,
-        to=["user.email"],
+        to=[user_instance.email],
     )
     email.content_subtype = "html"
     email.send(fail_silently=False)
