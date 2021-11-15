@@ -26,6 +26,7 @@ from student.views import (
     GetStudentsByCourse,
     DeleteStudent,
     ActivateUser,
+    Error404,
     test_view,
 )
 
@@ -49,4 +50,4 @@ urlpatterns = [
     path("test/", test_view, name="test"),
 ]
 
-handler404 = "student.views.error_404"
+handler404 = Error404.as_view()

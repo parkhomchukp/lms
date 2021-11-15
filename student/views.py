@@ -162,18 +162,5 @@ class ActivateUser(RedirectView):
         return HttpResponse("Wrong data")
 
 
-def error_404(request, exception):
-    data = {}
-    return render(request, "student/404.html", data)
-
-
-def send_email(request):
-    email = EmailMessage(
-        subject="registration lms", body="test text", to=["pavelparkhomchuk@gmail.com"]
-    )
-    email.send()
-    return HttpResponse("Done")
-
-
-def test_view(request):
-    return HttpResponse(ExtendedUser.people.get_staff_users())
+class Error404(TemplateView):
+    template_name = "student/404.html"
