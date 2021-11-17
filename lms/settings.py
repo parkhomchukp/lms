@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     "crispy_forms",
     "phonenumber_field",
     "student",
-    "groups",
     "django_extensions",
     "search",
     "courses",

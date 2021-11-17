@@ -25,6 +25,5 @@ urlpatterns = [
     path("", IndexView.as_view(), name="index"),
     path("students/", include("student.urls")),
     path("teachers/", include("teachers.urls")),
-    path("groups/", include("groups.urls")),
     path("search/", include("search.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
