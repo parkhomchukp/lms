@@ -17,6 +17,7 @@ python-dotenv = "*"
 django-inlinecss = '*'
 six = '*'
 pillow = "*"
+social-auth-app-django = "*"
 
 [dev-packages]
 

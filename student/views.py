@@ -10,7 +10,7 @@ from django.utils.http import urlsafe_base64_decode
 from django.views.decorators.csrf import csrf_exempt
 
 from student.forms import RegistrationStudentForm
-from student.models import Student, ExtendedUser
+from student.models import Student
 from courses.models import Course
 from webargs.djangoparser import use_args
 from webargs import fields
