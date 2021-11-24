@@ -69,8 +69,6 @@ ROOT_URLCONF = 'lms.urls'
 
 AUTH_USER_MODEL = "student.CustomUser"
 
-SOCIAL_AUTH_FACEBOOK_KEY = "858634121467127"
-SOCIAL_AUTH_FACEBOOK_SECRET = "664322efc5e8c6600c74ff2f6065a1b5"
 SOCIAL_AUTH_GITHUB_KEY = "5b29f5e39e33e2675c9e"
 SOCIAL_AUTH_GITHUB_SECRET = "96772c87ad2abd6ef3b7f59b32b8ed58b9543b00"
 
@@ -99,7 +97,6 @@ TEMPLATES = [
 ]
 
 AUTHENTICATION_BACKENDS = (
-    "social_core.backends.facebook.FacebookOAuth2",
     "social_core.backends.github.GithubOAuth2",
     "django.contrib.auth.backends.ModelBackend",
 )
