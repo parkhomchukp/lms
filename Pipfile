@@ -18,6 +18,9 @@ django-inlinecss = '*'
 six = '*'
 pillow = "*"
 social-auth-app-django = "*"
+django-admin-shortcuts = "*"
+django-material-admin = "*"
+django-suit = {file = "https://github.com/darklow/django-suit/tarball/v2"}
 
 [dev-packages]
 

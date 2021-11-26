@@ -138,6 +138,10 @@ class Person(models.Model):
 
 
 class Student(Person):
+    class Meta:
+        verbose_name = "My student"
+        verbose_name_plural = "All students"
+
     course = models.ForeignKey("courses.Course", null=True, on_delete=models.SET_NULL)
     birthdate = models.DateField(
         null=True, default=datetime.date.today, validators=[age_validator]
