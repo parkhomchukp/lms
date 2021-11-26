@@ -68,53 +68,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'lms.urls'
 
-# ADMIN_SHORTCUTS = [
-#     {
-#         "shortcuts": [
-#             {
-#                 "url": "/",
-#                 "open_new_window": True,
-#             },
-#             {
-#                 "url_name": "admin:logout",
-#             },
-#         ]
-#     },
-#     {
-#         "title": "CMS",
-#         "shortcuts": [
-#             {
-#                 "title": "Pages",
-#                 "url_name": "admin:index",
-#             },
-#             {
-#                 "title": "Files",
-#                 "url_name": "admin:index",
-#             },
-#             {
-#                 "title": "Contact forms",
-#                 "icon": "columns",
-#                 "url_name": "admin:index",
-#                 "count_new": "3",
-#             },
-#             {
-#                 "title": "Products",
-#                 "url_name": "admin:index",
-#             },
-#             {
-#                 "title": "Orders",
-#                 "url_name": "admin:index",
-#                 "count_new": "12",
-#             },
-#         ],
-#     },
-# ]
-# ADMIN_SHORTCUTS_SETTINGS = {
-#     "show_on_all_pages": True,
-#     "hide_app_list": True,
-#     "open_new_window": False,
-# }
-
 AUTH_USER_MODEL = "student.CustomUser"
 
 SOCIAL_AUTH_GITHUB_KEY = "5b29f5e39e33e2675c9e"
