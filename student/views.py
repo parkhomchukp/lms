@@ -10,7 +10,7 @@ from django.utils.http import urlsafe_base64_decode
 from django.views.decorators.csrf import csrf_exempt
 
 from student.forms import RegistrationStudentForm
-from student.models import Student, ExtendedUser
+from student.models import Student
 from courses.models import Course
 from webargs.djangoparser import use_args
 from webargs import fields
@@ -162,18 +162,5 @@ class ActivateUser(RedirectView):
         return HttpResponse("Wrong data")
 
 
-def error_404(request, exception):
-    data = {}
-    return render(request, "student/404.html", data)
-
-
-def send_email(request):
-    email = EmailMessage(
-        subject="registration lms", body="test text", to=["pavelparkhomchuk@gmail.com"]
-    )
-    email.send()
-    return HttpResponse("Done")
-
-
-def test_view(request):
-    return HttpResponse(ExtendedUser.people.get_staff_users())
+class Error404(TemplateView):
+    template_name = "student/404.html"

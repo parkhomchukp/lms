@@ -1,22 +1,28 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
-from django.shortcuts import render
+from django.urls import reverse_lazy
+from django.views.generic import ListView
+from marshmallow import fields
+from webargs.djangoparser import use_args
 from student.models import Student
 
 
-# Create your views here.
-def search_students(request):
+class SearchStudents(LoginRequiredMixin, ListView):
+    template_name = "search_results.html"
+    context_object_name = "students"
+    login_url = reverse_lazy("students:login")
 
-    question = request.GET.get("q")
-
-    if question is not None:
-        students = Student.objects.filter(
-            Q(first_name__contains=question)
-            | Q(last_name__contains=question)
-            | Q(email__contains=question)
-        )
-
-    return render(
-        request=request,
-        template_name="search_results.html",
-        context={"students": students},
+    @use_args(
+        {"q": fields.Str(required=False), "text": fields.Str(required=False)},
+        location="query",
     )
+    def get_queryset(self, params):
+        students = None
+
+        if params["q"] is not None:
+            students = Student.objects.filter(
+                Q(first_name__contains=params["q"])
+                | Q(last_name__contains=params["q"])
+                | Q(email__contains=params["q"])
+            )
+        return students

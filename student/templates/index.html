@@ -1,3 +1,5 @@
+{% load static %}
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -70,6 +72,10 @@
                     <li class="nav-item">
                         <a class="nav-link"
                            href="{% url "students:login" %}"> Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           href="{% url "social:begin" "github" %}"><img src="{% static 'github.png' %}" style="height: 25px"></a>
                     </li>
                 {% endif %}
                 <li>
